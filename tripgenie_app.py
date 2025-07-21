@@ -3,14 +3,11 @@ import openai
 from datetime import datetime, timedelta
 import os
 
-# --- Set OpenAI API key safely ---
-try:
-    openai.api_key = st.secrets["openai"]["api_key"]
-except KeyError:
-    openai.api_key = os.getenv("OPENAI_API_KEY", "")  # fallback for local testing
-    if not openai.api_key:
-        st.error("❌ OpenAI API key not found. Please set it in Streamlit secrets or as an environment variable.")
-        st.stop()
+# --- Set OpenAI API key safely (free Streamlit accounts use fallback) ---
+openai.api_key = os.getenv("OPENAI_API_KEY", "sk-your_actual_key_here")  # replace with your key
+if not openai.api_key:
+    st.error("❌ OpenAI API key not found. Please set it in environment variables.")
+    st.stop()
 
 st.title("🧳 TripGenie AI – Smart Travel Planner from TikTok")
 
