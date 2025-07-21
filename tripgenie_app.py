@@ -3,7 +3,7 @@ import openai
 from datetime import datetime, timedelta
 
 # --- Set your OpenAI API key here or load from secrets ---
-openai.api_key = "YOUR_API_KEY"
+openai.api_key = st.secrets["openai"]["api_key"]
 
 st.title("🧳 TripGenie AI – Smart Travel Planner from TikTok")
 
@@ -31,7 +31,7 @@ def generate_itinerary(locations, traveler_type, arrival, departure, days):
 
     Include suggested time blocks and nearby food spots. Keep travel between places efficient.
     """
-    
+
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[{"role": "user", "content": base_prompt}],
@@ -45,14 +45,16 @@ if st.button("Generate Itinerary"):
     with st.spinner("Analyzing TikTok and building your itinerary..."):
         locations = extract_locations_from_tiktok(tiktok_url)
         result = generate_itinerary(locations, traveler_type, arrival_time, departure_time, days)
+
         st.markdown("---")
         st.subheader("📅 Your Smart AI Itinerary")
         st.markdown(result)
 
+        # ✅ Show booking links only after generating itinerary
         st.markdown("---")
         st.markdown("### 🔗 Booking Links (Mock)")
         for place in locations:
             st.markdown(f"- [Search hotels near {place}](https://www.booking.com/searchresults.html?ss={place.replace(' ', '+')})")
             st.markdown(f"- [Find tours for {place}](https://www.getyourguide.com/s/?q={place.replace(' ', '+')})")
 
-st.caption("This is a demo MVP. In the full version, we’ll auto-parse TikTok videos and add real-time APIs for booking, weather, and maps.")
+    st.caption("This is a demo MVP. In the full version, we’ll auto-parse TikTok videos and add real-time APIs for booking, weather, and maps.")
