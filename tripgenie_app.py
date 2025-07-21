@@ -2,11 +2,15 @@ import streamlit as st
 import openai
 from datetime import datetime, timedelta
 import os
+from dotenv import load_dotenv
 
-# --- Set OpenAI API key safely (free Streamlit accounts use fallback) ---
-openai.api_key = os.getenv("OPENAI_API_KEY", "sk-your_actual_key_here")  # replace with your key
+# --- Load environment variables from .env file ---
+load_dotenv()
+
+# --- Set OpenAI API key safely ---
+openai.api_key = os.getenv("OPENAI_API_KEY")
 if not openai.api_key:
-    st.error("❌ OpenAI API key not found. Please set it in environment variables.")
+    st.error("❌ OpenAI API key not found. Please set it in a .env file or as an environment variable.")
     st.stop()
 
 st.title("🧳 TripGenie AI – Smart Travel Planner from TikTok")
