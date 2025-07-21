@@ -13,54 +13,56 @@ st.title("🧳 TripGenie AI – Smart Travel Planner from TikTok")
 
 # --- Input section ---
 tiktok_url = st.text_input("Paste TikTok travel video URL")
-traveler_type = st.selectbox("Who's traveling?", ["Solo", "Couple", "Family with infant", "Traveling with elder"])
-arrival_time = st.time_input("Flight arrival time", value=datetime.now().time())
-departure_time = st.time_input("Flight departure time", value=(datetime.now() + timedelta(days=7)).time())
-days = st.slider("Trip length (days)", 3, 14, 7)
-
-# --- Placeholder function to extract locations from TikTok (mocked) ---
-def extract_locations_from_tiktok(url):
-    # In real version, you'd parse video or captions
-    return ["Tokyo Tower", "Shibuya Crossing", "Asakusa Temple", "TeamLab Planets"]
-
-# --- Build itinerary prompt ---
-def generate_itinerary(locations, traveler_type, arrival, departure, days):
-    base_prompt = f"""
-    You are a smart travel assistant. Given these places: {', '.join(locations)}, create a detailed {days}-day travel itinerary in Tokyo.
-
-    Adjust the plan based on:
-    - Arrival time: {arrival}
-    - Departure time: {departure}
-    - Traveler type: {traveler_type}
-
-    Include suggested time blocks and nearby food spots. Keep travel between places efficient.
-    """
-
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": base_prompt}],
-        temperature=0.7,
-        max_tokens=1500
-    )
-    return response.choices[0].message.content
-
-# --- Generate Itinerary ---
 itinerary_generated = False
-if st.button("Generate Itinerary"):
-    with st.spinner("Analyzing TikTok and building your itinerary..."):
-        locations = extract_locations_from_tiktok(tiktok_url)
-        result = generate_itinerary(locations, traveler_type, arrival_time, departure_time, days)
 
+if tiktok_url:
+    traveler_type = st.selectbox("Who's traveling?", ["Solo", "Couple", "Family with infant", "Traveling with elder"])
+    arrival_time = st.time_input("Flight arrival time", value=datetime.now().time())
+    departure_time = st.time_input("Flight departure time", value=(datetime.now() + timedelta(days=7)).time())
+    days = st.slider("Trip length (days)", 3, 14, 7)
+
+    # --- Placeholder function to extract locations from TikTok (mocked) ---
+    def extract_locations_from_tiktok(url):
+        # In real version, you'd parse video or captions
+        return ["Tokyo Tower", "Shibuya Crossing", "Asakusa Temple", "TeamLab Planets"]
+
+    # --- Build itinerary prompt ---
+    def generate_itinerary(locations, traveler_type, arrival, departure, days):
+        base_prompt = f"""
+        You are a smart travel assistant. Given these places: {', '.join(locations)}, create a detailed {days}-day travel itinerary in Tokyo.
+
+        Adjust the plan based on:
+        - Arrival time: {arrival}
+        - Departure time: {departure}
+        - Traveler type: {traveler_type}
+
+        Include suggested time blocks and nearby food spots. Keep travel between places efficient.
+        """
+
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": base_prompt}],
+            temperature=0.7,
+            max_tokens=1500
+        )
+        return response.choices[0].message.content
+
+    # --- Generate Itinerary ---
+    if st.button("Generate Itinerary"):
+        with st.spinner("Analyzing TikTok and building your itinerary..."):
+            locations = extract_locations_from_tiktok(tiktok_url)
+            result = generate_itinerary(locations, traveler_type, arrival_time, departure_time, days)
+
+            st.markdown("---")
+            st.subheader("📅 Your Smart AI Itinerary")
+            st.markdown(result)
+            itinerary_generated = True
+
+    if 'result' in locals() and itinerary_generated:
         st.markdown("---")
-        st.subheader("📅 Your Smart AI Itinerary")
-        st.markdown(result)
-        itinerary_generated = True
+        st.markdown("### 🔗 Booking Links (Mock)")
+        for place in locations:
+            st.markdown(f"- [Search hotels near {place}](https://www.booking.com/searchresults.html?ss={place.replace(' ', '+')})")
+            st.markdown(f"- [Find tours for {place}](https://www.getyourguide.com/s/?q={place.replace(' ', '+')})")
 
-if 'result' in locals() and itinerary_generated:
-    st.markdown("---")
-    st.markdown("### 🔗 Booking Links (Mock)")
-    for place in locations:
-        st.markdown(f"- [Search hotels near {place}](https://www.booking.com/searchresults.html?ss={place.replace(' ', '+')})")
-        st.markdown(f"- [Find tours for {place}](https://www.getyourguide.com/s/?q={place.replace(' ', '+')})")
-
-    st.caption("This is a demo MVP. In the full version, we’ll auto-parse TikTok videos and add real-time APIs for booking, weather, and maps.")
+        st.caption("This is a demo MVP. In the full version, we’ll auto-parse TikTok videos and add real-time APIs for booking, weather, and maps.")
