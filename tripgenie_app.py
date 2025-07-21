@@ -45,6 +45,7 @@ def generate_itinerary(locations, traveler_type, arrival, departure, days):
     return response.choices[0].message.content
 
 # --- Generate Itinerary ---
+itinerary_generated = False
 if st.button("Generate Itinerary"):
     with st.spinner("Analyzing TikTok and building your itinerary..."):
         locations = extract_locations_from_tiktok(tiktok_url)
@@ -53,12 +54,13 @@ if st.button("Generate Itinerary"):
         st.markdown("---")
         st.subheader("📅 Your Smart AI Itinerary")
         st.markdown(result)
+        itinerary_generated = True
 
-        # ✅ Show booking links only after generating itinerary
-        st.markdown("---")
-        st.markdown("### 🔗 Booking Links (Mock)")
-        for place in locations:
-            st.markdown(f"- [Search hotels near {place}](https://www.booking.com/searchresults.html?ss={place.replace(' ', '+')})")
-            st.markdown(f"- [Find tours for {place}](https://www.getyourguide.com/s/?q={place.replace(' ', '+')})")
+if 'result' in locals() and itinerary_generated:
+    st.markdown("---")
+    st.markdown("### 🔗 Booking Links (Mock)")
+    for place in locations:
+        st.markdown(f"- [Search hotels near {place}](https://www.booking.com/searchresults.html?ss={place.replace(' ', '+')})")
+        st.markdown(f"- [Find tours for {place}](https://www.getyourguide.com/s/?q={place.replace(' ', '+')})")
 
     st.caption("This is a demo MVP. In the full version, we’ll auto-parse TikTok videos and add real-time APIs for booking, weather, and maps.")
